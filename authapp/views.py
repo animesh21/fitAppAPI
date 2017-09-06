@@ -38,7 +38,8 @@ class LoginView(APIView):
         try:
             credentials = dict(username=data['username'], password=data['password'])
         except KeyError as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            data = {'message': 'username or password not present in the data.'}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         user = authenticate(**credentials)
         if user:
             login(request, user)

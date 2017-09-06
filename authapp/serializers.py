@@ -4,14 +4,18 @@ from rest_framework import serializers
 
 # User serializer to make JSON of user object
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    
+
+    password = serializers.CharField(required=False)
+
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
 
     def update(self, instance, validated_data):
-        instance.password = validated_data.get('password', instance.password)
-        instance.email = validated_data.get('email', instance.password)
+        password = validated_data.get('password', '')
+        if instance.check_password(raw_password=password):
+            instance.set_password(raw_password=password)
+        instance.email = validated_data.get('email', instance.email)
         instance.save()
         return instance
 
